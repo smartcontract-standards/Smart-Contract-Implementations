@@ -26,6 +26,7 @@ ERC/
 │   ├── standards/           # ERC standard implementations
 │   │   ├── ERC20/          # Fungible tokens
 │   │   ├── ERC721/         # Non-fungible tokens
+│   │   ├── ERC8004/        # Trustless Agents
 │   │   ├── ERC1155/        # Multi-token standard
 │   │   └── ...
 │   └── shared/             # Shared components and utilities
@@ -45,7 +46,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 
 ### 🔴 Core Token Standards
 - **ERC-20**: Fungible Token Standard ✅ *complete* - [View Implementation](src/standards/ERC20/) - [Read Docs](src/standards/ERC20/README.md)
-- **ERC-721**: Non-Fungible Token Standard 📋 *planned*
+- **ERC-721**: Non-Fungible Token Standard ✅ *complete* - [View Implementation](src/standards/ERC721/) - [Read Docs](src/standards/ERC721/README.md)
 - **ERC-1155**: Multi Token Standard 📋 *planned*
 - **ERC-4626**: Tokenized Vault Standard 📋 *planned*
 - **ERC-6909**: Minimal Multi-Token Standard 📋 *planned*
@@ -101,6 +102,9 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 - **ERC-7579**: Minimum Modular Smart Accounts ⏳ *in progress*
 - **ERC-7587**: EIP-721 Upgradeable with Rules ⏳ *in progress*
 - **ERC-7719**: Max Querier Commit Timestamp ⏳ *in progress*
+
+### 🤖 Agent & Trust Standards
+- **ERC-8004**: Trustless Agents ✅ *complete* - [View Implementation](src/standards/ERC8004/) - [Read Docs](src/standards/ERC8004/README.md)
 
 ### 🔸 Advanced & Experimental Standards
 - **ERC-6909**: Minimal Multi-Token Interface (Advanced) 📋 *planned*

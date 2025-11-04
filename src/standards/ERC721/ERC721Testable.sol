@@ -9,9 +9,7 @@ import {ERC721} from "./ERC721.sol";
  * @notice DO NOT use this in production - use ERC721 instead
  */
 contract ERC721Testable is ERC721 {
-    constructor(string memory name_, string memory symbol_, string memory baseURI_)
-        ERC721(name_, symbol_, baseURI_)
-    {}
+    constructor(string memory name_, string memory symbol_, string memory baseURI_) ERC721(name_, symbol_, baseURI_) {}
 
     /**
      * @dev Exposes _mint for testing purposes

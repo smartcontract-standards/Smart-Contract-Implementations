@@ -61,12 +61,12 @@ contract ERC721 is IERC721, IERC721Metadata {
      */
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(_owners[tokenId] != address(0), "ERC721: invalid token ID");
-        
+
         string memory base = _baseURI;
         if (bytes(base).length == 0) {
             return "";
         }
-        
+
         // Convert tokenId to string and concatenate
         return string(abi.encodePacked(base, _toString(tokenId)));
     }
@@ -240,7 +240,9 @@ contract ERC721 is IERC721, IERC721Metadata {
      */
     function _safeMint(address to, uint256 tokenId, bytes memory data) internal virtual {
         _mint(to, tokenId);
-        require(_checkOnERC721Received(address(0), to, tokenId, data), "ERC721: transfer to non ERC721Receiver implementer");
+        require(
+            _checkOnERC721Received(address(0), to, tokenId, data), "ERC721: transfer to non ERC721Receiver implementer"
+        );
     }
 
     /**
@@ -290,7 +292,10 @@ contract ERC721 is IERC721, IERC721Metadata {
      * @param data Additional data with no specified format
      * @return bool Whether the call correctly returned the expected magic value
      */
-    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory data) private returns (bool) {
+    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory data)
+        private
+        returns (bool)
+    {
         if (to.code.length > 0) {
             try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data) returns (bytes4 retval) {
                 return retval == IERC721Receiver.onERC721Received.selector;

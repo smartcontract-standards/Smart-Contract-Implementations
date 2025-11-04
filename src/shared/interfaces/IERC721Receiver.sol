@@ -16,10 +16,7 @@ interface IERC721Receiver {
      * @param data Additional data with no specified format
      * @return bytes4 The function selector `IERC721Receiver.onERC721Received.selector`
      */
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external returns (bytes4);
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
+        external
+        returns (bytes4);
 }
