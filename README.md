@@ -26,8 +26,8 @@ ERC/
 │   ├── standards/           # ERC standard implementations
 │   │   ├── ERC20/          # Fungible tokens
 │   │   ├── ERC721/         # Non-fungible tokens
-│   │   ├── ERC8004/        # Trustless Agents
 │   │   ├── ERC1155/        # Multi-token standard
+│   │   ├── ERC8004/        # Trustless Agents
 │   │   └── ...
 │   └── shared/             # Shared components and utilities
 │       ├── interfaces/     # Interface definitions
@@ -47,7 +47,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 ### 🔴 Core Token Standards
 - **ERC-20**: Fungible Token Standard ✅ *complete* - [View Implementation](src/standards/ERC20/) - [Read Docs](src/standards/ERC20/README.md)
 - **ERC-721**: Non-Fungible Token Standard ✅ *complete* - [View Implementation](src/standards/ERC721/) - [Read Docs](src/standards/ERC721/README.md)
-- **ERC-1155**: Multi Token Standard 📋 *planned*
+- **ERC-1155**: Multi Token Standard ✅ *complete* - [View Implementation](src/standards/ERC1155/) - [Read Docs](src/standards/ERC1155/README.md)
 - **ERC-4626**: Tokenized Vault Standard 📋 *planned*
 - **ERC-6909**: Minimal Multi-Token Standard 📋 *planned*
 - **ERC-7540**: Minimal Multi-Token Standard (Alternative) 📋 *planned*
