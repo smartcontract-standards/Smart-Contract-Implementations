@@ -47,7 +47,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 - **ERC-20**: Fungible Token Standard ✅ *complete* - [View Implementation](src/standards/ERC20/) - [Read Docs](src/standards/ERC20/README.md)
 - **ERC-721**: Non-Fungible Token Standard 📋 *planned*
 - **ERC-1155**: Multi Token Standard 📋 *planned*
-- **ERC-4626**: Tokenized Vault Standard 📋 *planned*
+- **ERC-4626**: Tokenized Vault Standard ✅ *complete* - [View Implementation](src/standards/ERC4626/) - [Read Docs](src/standards/ERC4626/README.md)
 - **ERC-6909**: Minimal Multi-Token Standard 📋 *planned*
 - **ERC-7540**: Minimal Multi-Token Standard (Alternative) 📋 *planned*
 - **ERC-7521**: Intents Token Standard 📋 *planned*
