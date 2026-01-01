@@ -10,6 +10,11 @@ This implementation provides a fully compliant ERC-721 token with all standard f
 - **Metadata**: `name`, `symbol`, `tokenURI` as per EIP-721 metadata extension
 - **Safe Transfers**: Support for safe transfers to contracts implementing `IERC721Receiver`
 - **Internal Functions**: `_mint`, `_burn`, `_safeMint` for token lifecycle management
+This implementation provides a fully compliant ERC721 token with all standard features:
+
+- **Standard Functions**: `transferFrom`, `safeTransferFrom`, `approve`, `setApprovalForAll`, `balanceOf`, `ownerOf`, `getApproved`, `isApprovedForAll`
+- **Metadata**: `name`, `symbol`, `tokenURI` as per EIP-721 extension
+- **Internal Functions**: `_mint`, `_safeMint`, `_burn` for token lifecycle management
 - **Events**: `Transfer`, `Approval`, and `ApprovalForAll` events as per standard
 - **Gas Optimized**: Uses `unchecked` blocks where safe for gas efficiency
 
@@ -18,6 +23,7 @@ This implementation provides a fully compliant ERC-721 token with all standard f
 - **ERC721.sol**: Main production ERC721 implementation
 - **ERC721Testable.sol**: Testable version exposing internal mint/burn functions
 - **Test**: Comprehensive test suite with extensive test cases
+- **Test**: Comprehensive test suite covering all functionality
 
 ## 🚀 Usage
 
@@ -35,6 +41,11 @@ Or deploy directly:
 import {ERC721} from "src/standards/ERC721/ERC721.sol";
 
 ERC721 nft = new ERC721("My NFT Collection", "MNFT");
+ERC721 token = new ERC721(
+    "My NFT",                           // name
+    "MNFT",                             // symbol
+    "https://api.example.com/token/"    // baseURI
+);
 ```
 
 ### Basic Operations
@@ -73,6 +84,35 @@ nft.safeTransferFrom(from, to, tokenId);
 
 // Safe transfer with data
 nft.safeTransferFrom(from, to, tokenId, data);
+// Mint a token (internal function, implement in your contract)
+_mint(to, tokenId);
+
+// Transfer a token
+token.transferFrom(from, to, tokenId);
+
+// Safe transfer (checks if recipient can handle NFTs)
+token.safeTransferFrom(from, to, tokenId);
+
+// Approve an address to transfer a specific token
+token.approve(approved, tokenId);
+
+// Approve an operator to manage all tokens
+token.setApprovalForAll(operator, true);
+
+// Check token owner
+address owner = token.ownerOf(tokenId);
+
+// Check balance
+uint256 balance = token.balanceOf(address);
+
+// Get approved address for a token
+address approved = token.getApproved(tokenId);
+
+// Check if operator is approved for all
+bool approved = token.isApprovedForAll(owner, operator);
+
+// Get token URI
+string memory uri = token.tokenURI(tokenId);
 ```
 
 ## ✅ Test Coverage
@@ -82,12 +122,24 @@ The implementation includes comprehensive test coverage:
 ### Constructor Tests
 - ✅ Sets correct metadata (name, symbol)
 - ✅ Initializes with zero balance
+- ✅ Sets base URI correctly
 
 ### Mint Tests
 - ✅ Successful mint
 - ✅ Emits Transfer event
 - ✅ Reverts when minting to zero address
 - ✅ Reverts when token already minted
+- ✅ Supports multiple token mints
+
+### SafeMint Tests
+- ✅ Successful safe mint
+- ✅ Works with contract recipients
+
+### Burn Tests
+- ✅ Successful burn
+- ✅ Emits Transfer event
+- ✅ Reverts when token doesn't exist
+- ✅ Clears approval on burn
 
 ### Transfer Tests
 - ✅ Successful transfer
@@ -101,12 +153,28 @@ The implementation includes comprehensive test coverage:
 - ✅ Safe transfer to contract receiver
 - ✅ Safe transfer with data
 - ✅ Reverts when transferring to non-receiver contract
+- ✅ Reverts when not owner/approved
+- ✅ Reverts when transferring to zero address
+- ✅ Reverts when from incorrect owner
+- ✅ Clears approval on transfer
+
+### SafeTransferFrom Tests
+- ✅ Successful safe transfer
+- ✅ Works with contract recipients
 
 ### Approve Tests
 - ✅ Successful approval
 - ✅ Emits Approval event
 - ✅ Reverts when not owner or operator
 - ✅ Allows approved operator to approve
+- ✅ Reverts when not owner/operator
+- ✅ Reverts when approving to owner
+- ✅ Works with operator approval
+- ✅ Can approve zero address to clear
+
+### GetApproved Tests
+- ✅ Returns zero for non-existent token
+- ✅ Returns zero by default
 
 ### SetApprovalForAll Tests
 - ✅ Successful operator approval
@@ -128,6 +196,27 @@ The implementation includes comprehensive test coverage:
 - ✅ Multiple tokens per owner
 - ✅ Complex approval/transfer scenarios
 - ✅ Transfer then approve
+- ✅ Reverts when approving to self
+- ✅ Can revoke operator approval
+
+### IsApprovedForAll Tests
+- ✅ Returns false by default
+
+### OwnerOf Tests
+- ✅ Reverts when token doesn't exist
+
+### BalanceOf Tests
+- ✅ Reverts when zero address
+- ✅ Returns zero by default
+
+### TokenURI Tests
+- ✅ Returns correct URI
+- ✅ Reverts when token doesn't exist
+
+### Edge Case Tests
+- ✅ Transfer with approval works
+- ✅ Transfer with operator approval works
+- ✅ Mint, burn, and mint again works
 
 ## 🔒 Security Features
 
@@ -163,6 +252,10 @@ The implementation uses several gas optimization techniques:
 | isApprovedForAll      | ~2,500  | ~2,500  | ~2,500  |
 
 *Note: Gas costs vary based on network conditions and contract state*
+- **Unchecked arithmetic**: Used for increments/decrements where overflow/underflow is impossible
+- **Efficient storage layout**: Optimized mapping structure
+- **Minimal storage reads**: Cache values when used multiple times
+- **Early returns**: Return values efficiently
 
 ## 🧪 Running Tests
 
@@ -185,4 +278,13 @@ forge test --match-path test/standards/ERC721/ERC721.t.sol --gas-report
 ## ⚠️ Disclaimer
 
 **DO NOT deploy to mainnet without a comprehensive security audit.** This code is provided for educational and reference purposes only.
+
+## 📝 Notes
+
+- This is a base ERC721 implementation. For production use, you may want to extend it with:
+  - Access control (e.g., onlyOwner for minting)
+  - Maximum supply limits
+  - Minting price mechanisms
+  - Royalty support (EIP-2981)
+  - Enumerable extension (EIP-721 enumerable)
 
