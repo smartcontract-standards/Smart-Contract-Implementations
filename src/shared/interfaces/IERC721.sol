@@ -18,18 +18,18 @@ interface IERC721 {
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 
     /**
-     * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets
+     * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
      */
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
     /**
-     * @dev Returns the number of tokens in `owner`'s account
+     * @dev Returns the number of tokens in ``owner``'s account.
      * @param owner The address to query
      */
     function balanceOf(address owner) external view returns (uint256);
 
     /**
-     * @dev Returns the owner of the `tokenId` token
+     * @dev Returns the owner of the `tokenId` token.
      * @param tokenId The token ID to query
      * @return owner The address of the token owner
      */
@@ -37,7 +37,7 @@ interface IERC721 {
 
     /**
      * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
-     * are aware of the ERC721 protocol to prevent tokens from being forever locked
+     * are aware of the ERC721 protocol to prevent tokens from being forever locked.
      * @param from The address to transfer from
      * @param to The address to transfer to
      * @param tokenId The token ID to transfer
@@ -45,7 +45,7 @@ interface IERC721 {
     function safeTransferFrom(address from, address to, uint256 tokenId) external;
 
     /**
-     * @dev Transfers `tokenId` token from `from` to `to`
+     * @dev Transfers `tokenId` token from `from` to `to`.
      * @param from The address to transfer from
      * @param to The address to transfer to
      * @param tokenId The token ID to transfer
@@ -53,40 +53,43 @@ interface IERC721 {
     function transferFrom(address from, address to, uint256 tokenId) external;
 
     /**
-     * @dev Gives permission to `to` to transfer `tokenId` token to another account
+     * @dev Gives permission to `to` to transfer `tokenId` token to another account.
+     * The approval is cleared when the token is transferred.
      * @param to The address to approve
      * @param tokenId The token ID to approve
      */
     function approve(address to, uint256 tokenId) external;
 
     /**
-     * @dev Returns the account approved for `tokenId` token
+     * @dev Returns the account approved for `tokenId` token.
      * @param tokenId The token ID to query
      * @return operator The address approved for the token
      */
     function getApproved(uint256 tokenId) external view returns (address operator);
 
     /**
-     * @dev Approve or remove `operator` as an operator for the caller
+     * @dev Approve or remove `operator` as an operator for the caller.
+     * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.
      * @param operator The address to set as operator
-     * @param approved True to approve, false to revoke
+     * @param approved Whether to approve or remove the operator
      */
     function setApprovalForAll(address operator, bool approved) external;
 
     /**
-     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`
+     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.
      * @param owner The address to query
      * @param operator The address to query
-     * @return approved True if operator is approved for all, false otherwise
+     * @return approved Whether the operator is approved
      */
     function isApprovedForAll(address owner, address operator) external view returns (bool);
 
     /**
-     * @dev Safely transfers `tokenId` token from `from` to `to`, with additional data
+     * @dev Safely transfers `tokenId` token from `from` to `to`.
      * @param from The address to transfer from
      * @param to The address to transfer to
      * @param tokenId The token ID to transfer
-     * @param data Additional data to send with the call
+     * @param data Additional data with no specified format
      */
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
 }
+
