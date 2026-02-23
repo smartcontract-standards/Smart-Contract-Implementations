@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {IERC1155} from "./IERC1155.sol";
-
 /**
  * @title IERC1155MetadataURI
- * @dev Extension of IERC1155 that includes metadata URI functions
+ * @dev ERC1155 Metadata URI extension interface
  */
-interface IERC1155MetadataURI is IERC1155 {
+interface IERC1155MetadataURI {
     /**
-     * @dev Returns the URI for token type `id`
-     * @param id The token ID to query
-     * @return uri The URI string
+     * @dev Returns the URI for token type `id`.
+     *
+     * If the `\{id\}` substring is present in the URI, it must be replaced by
+     * clients with the actual token type ID.
      */
     function uri(uint256 id) external view returns (string memory);
 }

@@ -4,68 +4,78 @@ pragma solidity ^0.8.20;
 import {IERC1155} from "../../shared/interfaces/IERC1155.sol";
 import {IERC1155MetadataURI} from "../../shared/interfaces/IERC1155MetadataURI.sol";
 import {IERC1155Receiver} from "../../shared/interfaces/IERC1155Receiver.sol";
+import {IERC165} from "../../shared/interfaces/IERC165.sol";
 
 /**
  * @title ERC1155
  * @dev Implementation of the ERC1155 Multi Token Standard
- * @notice This is a fully compliant ERC1155 implementation following EIP-1155
+ * @notice This is a fully compliant ERC1155 token implementation following EIP-1155
  * @custom:security-contact This contract should be audited before use in production
  */
 contract ERC1155 is IERC1155, IERC1155MetadataURI {
-    // Mapping from token ID to account balances: tokenId => account => balance
+    // Mapping from token ID to account balances
     mapping(uint256 => mapping(address => uint256)) private _balances;
 
-    // Mapping from account to operator approvals: account => operator => approved
+    // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    // Base URI for token metadata
+    // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
     string private _uri;
 
     /**
-     * @dev Creates an ERC1155 token with the given base URI
-     * @param uri_ Base URI for all token types
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
+        return
+            interfaceId == type(IERC1155).interfaceId ||
+            interfaceId == type(IERC1155MetadataURI).interfaceId ||
+            interfaceId == type(IERC165).interfaceId;
+    }
+
+    /**
+     * @dev Sets the URI for all token types.
      */
     constructor(string memory uri_) {
         _setURI(uri_);
     }
 
     /**
-     * @dev Returns the URI for token type `id`
-     * @param id The token ID to query
-     * @return uri The URI string
+     * @dev See {IERC1155MetadataURI-uri}.
+     *
+     * This implementation returns the same URI for *all* token types. It relies
+     * on the token type ID substitution mechanism
+     * https://eips.ethereum.org/EIPS/eip-1155#metadata[defined in the EIP].
+     *
+     * Clients calling this function must replace the `\{id\}` substring with the
+     * actual token type ID.
      */
-    function uri(uint256 id) public view virtual override returns (string memory) {
-        string memory baseURI = _uri;
-        if (bytes(baseURI).length == 0) {
-            return "";
-        }
-        return string(abi.encodePacked(baseURI, _toString(id)));
+    function uri(uint256) public view virtual override returns (string memory) {
+        return _uri;
     }
 
     /**
-     * @dev Returns the amount of tokens of token type `id` owned by `account`
-     * @param account The address to query
-     * @param id The token ID to query
-     * @return balance The balance of the token type
+     * @dev See {IERC1155-balanceOf}.
+     *
+     * Requirements:
+     *
+     * - `account` cannot be the zero address.
      */
     function balanceOf(address account, uint256 id) public view virtual override returns (uint256) {
-        require(account != address(0), "ERC1155: address zero is not a valid owner");
+        require(account != address(0), "ERC1155: balance query for the zero address");
         return _balances[id][account];
     }
 
     /**
-     * @dev Returns the amount of tokens of each token type `ids` owned by `account`
-     * @param accounts The addresses to query
-     * @param ids The token IDs to query
-     * @return balances The balances of each token type
+     * @dev See {IERC1155-balanceOfBatch}.
+     *
+     * Requirements:
+     *
+     * - `accounts` and `ids` must have the same length.
      */
-    function balanceOfBatch(address[] memory accounts, uint256[] memory ids)
-        public
-        view
-        virtual
-        override
-        returns (uint256[] memory)
-    {
+    function balanceOfBatch(
+        address[] memory accounts,
+        uint256[] memory ids
+    ) public view virtual override returns (uint256[] memory) {
         require(accounts.length == ids.length, "ERC1155: accounts and ids length mismatch");
 
         uint256[] memory batchBalances = new uint256[](accounts.length);
@@ -78,53 +88,38 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
     }
 
     /**
-     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens
-     * @param operator The address to set as operator
-     * @param approved True to grant permission, false to revoke
+     * @dev See {IERC1155-setApprovalForAll}.
      */
     function setApprovalForAll(address operator, bool approved) public virtual override {
-        require(msg.sender != operator, "ERC1155: setting approval status for self");
-
-        _operatorApprovals[msg.sender][operator] = approved;
-        emit ApprovalForAll(msg.sender, operator, approved);
+        _setApprovalForAll(msg.sender, operator, approved);
     }
 
     /**
-     * @dev Returns true if `operator` is approved to transfer `account`'s tokens
-     * @param account The address to query
-     * @param operator The address to query
-     * @return approved True if operator is approved for all
+     * @dev See {IERC1155-isApprovedForAll}.
      */
     function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
         return _operatorApprovals[account][operator];
     }
 
     /**
-     * @dev Transfers `amount` tokens of token type `id` from `from` to `to`
-     * @param from The address to transfer from
-     * @param to The address to transfer to
-     * @param id The token ID to transfer
-     * @param amount The amount to transfer
-     * @param data Additional data with no specified format
+     * @dev See {IERC1155-safeTransferFrom}.
      */
-    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data)
-        public
-        virtual
-        override
-    {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public virtual override {
         require(
-            from == msg.sender || isApprovedForAll(from, msg.sender), "ERC1155: caller is not token owner nor approved"
+            from == msg.sender || isApprovedForAll(from, msg.sender),
+            "ERC1155: caller is not token owner or approved"
         );
         _safeTransferFrom(from, to, id, amount, data);
     }
 
     /**
-     * @dev Transfers `amounts` tokens of token types `ids` from `from` to `to`
-     * @param from The address to transfer from
-     * @param to The address to transfer to
-     * @param ids The token IDs to transfer
-     * @param amounts The amounts to transfer
-     * @param data Additional data with no specified format
+     * @dev See {IERC1155-safeBatchTransferFrom}.
      */
     function safeBatchTransferFrom(
         address from,
@@ -134,23 +129,31 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
         bytes memory data
     ) public virtual override {
         require(
-            from == msg.sender || isApprovedForAll(from, msg.sender), "ERC1155: caller is not token owner nor approved"
+            from == msg.sender || isApprovedForAll(from, msg.sender),
+            "ERC1155: caller is not token owner or approved"
         );
         _safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 
     /**
-     * @dev Internal function to transfer `amount` tokens of token type `id` from `from` to `to`
-     * @param from The address to transfer from
-     * @param to The address to transfer to
-     * @param id The token ID to transfer
-     * @param amount The amount to transfer
-     * @param data Additional data with no specified format
+     * @dev Transfers `amount` tokens of token type `id` from `from` to `to`.
+     *
+     * Emits a {TransferSingle} event.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     * - `from` must have a balance of tokens of type `id` of at least `amount`.
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
+     * acceptance magic value.
      */
-    function _safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data)
-        internal
-        virtual
-    {
+    function _safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) internal virtual {
         require(to != address(0), "ERC1155: transfer to the zero address");
 
         address operator = msg.sender;
@@ -163,8 +166,8 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
         require(fromBalance >= amount, "ERC1155: insufficient balance for transfer");
         unchecked {
             _balances[id][from] = fromBalance - amount;
-            _balances[id][to] += amount;
         }
+        _balances[id][to] += amount;
 
         emit TransferSingle(operator, from, to, id, amount);
 
@@ -174,12 +177,14 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
     }
 
     /**
-     * @dev Internal function to transfer `amounts` tokens of token types `ids` from `from` to `to`
-     * @param from The address to transfer from
-     * @param to The address to transfer to
-     * @param ids The token IDs to transfer
-     * @param amounts The amounts to transfer
-     * @param data Additional data with no specified format
+     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {_safeTransferFrom}.
+     *
+     * Emits a {TransferBatch} event.
+     *
+     * Requirements:
+     *
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
+     * acceptance magic value.
      */
     function _safeBatchTransferFrom(
         address from,
@@ -203,8 +208,8 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
             require(fromBalance >= amount, "ERC1155: insufficient balance for transfer");
             unchecked {
                 _balances[id][from] = fromBalance - amount;
-                _balances[id][to] += amount;
             }
+            _balances[id][to] += amount;
         }
 
         emit TransferBatch(operator, from, to, ids, amounts);
@@ -215,13 +220,45 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
     }
 
     /**
-     * @dev Internal function to mint `amount` tokens of token type `id` to `to`
-     * @param to The address to mint to
-     * @param id The token ID to mint
-     * @param amount The amount to mint
-     * @param data Additional data with no specified format
+     * @dev Sets a new URI for all token types, by relying on the token type ID
+     * substitution mechanism
+     * https://eips.ethereum.org/EIPS/eip-1155#metadata[defined in the EIP].
+     *
+     * By this mechanism, any occurrence of the `\{id\}` substring in either the
+     * URI or any of the values in the JSON file at said URI will be replaced by
+     * clients with the token type ID.
+     *
+     * For example, the `https://token-cdn-domain/\{id\}.json` URI would be
+     * interpreted by clients as
+     * `https://token-cdn-domain/000000000000000000000000000000000000000000000000000000000004cce0.json`
+     * for token type ID 0x4cce0.
+     *
+     * See {uri}.
+     *
+     * Because these URIs cannot be meaningfully represented by the {URI} event,
+     * this function emits no events.
      */
-    function _mint(address to, uint256 id, uint256 amount, bytes memory data) internal virtual {
+    function _setURI(string memory newuri) internal virtual {
+        _uri = newuri;
+    }
+
+    /**
+     * @dev Creates `amount` tokens of token type `id`, and assigns them to `to`.
+     *
+     * Emits a {TransferSingle} event.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
+     * acceptance magic value.
+     */
+    function _mint(
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) internal virtual {
         require(to != address(0), "ERC1155: mint to the zero address");
 
         address operator = msg.sender;
@@ -239,16 +276,22 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
     }
 
     /**
-     * @dev Internal function to mint `amounts` tokens of token types `ids` to `to`
-     * @param to The address to mint to
-     * @param ids The token IDs to mint
-     * @param amounts The amounts to mint
-     * @param data Additional data with no specified format
+     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {_mint}.
+     *
+     * Emits a {TransferBatch} event.
+     *
+     * Requirements:
+     *
+     * - `ids` and `amounts` must have the same length.
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
+     * acceptance magic value.
      */
-    function _mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
-        internal
-        virtual
-    {
+    function _mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal virtual {
         require(to != address(0), "ERC1155: mint to the zero address");
         require(ids.length == amounts.length, "ERC1155: ids and amounts length mismatch");
 
@@ -268,12 +311,20 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
     }
 
     /**
-     * @dev Internal function to burn `amount` tokens of token type `id` from `from`
-     * @param from The address to burn from
-     * @param id The token ID to burn
-     * @param amount The amount to burn
+     * @dev Destroys `amount` tokens of token type `id` from `from`
+     *
+     * Emits a {TransferSingle} event.
+     *
+     * Requirements:
+     *
+     * - `from` cannot be the zero address.
+     * - `from` must have at least `amount` tokens of token type `id`.
      */
-    function _burn(address from, uint256 id, uint256 amount) internal virtual {
+    function _burn(
+        address from,
+        uint256 id,
+        uint256 amount
+    ) internal virtual {
         require(from != address(0), "ERC1155: burn from the zero address");
 
         address operator = msg.sender;
@@ -294,12 +345,19 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
     }
 
     /**
-     * @dev Internal function to burn `amounts` tokens of token types `ids` from `from`
-     * @param from The address to burn from
-     * @param ids The token IDs to burn
-     * @param amounts The amounts to burn
+     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {_burn}.
+     *
+     * Emits a {TransferBatch} event.
+     *
+     * Requirements:
+     *
+     * - `ids` and `amounts` must have the same length.
      */
-    function _burnBatch(address from, uint256[] memory ids, uint256[] memory amounts) internal virtual {
+    function _burnBatch(
+        address from,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) internal virtual {
         require(from != address(0), "ERC1155: burn from the zero address");
         require(ids.length == amounts.length, "ERC1155: ids and amounts length mismatch");
 
@@ -324,7 +382,39 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
     }
 
     /**
-     * @dev Hook that is called before any token transfer
+     * @dev Approve `operator` to operate on all of `owner` tokens
+     *
+     * Emits an {ApprovalForAll} event.
+     */
+    function _setApprovalForAll(
+        address owner,
+        address operator,
+        bool approved
+    ) internal virtual {
+        require(owner != operator, "ERC1155: setting approval status for self");
+        _operatorApprovals[owner][operator] = approved;
+        emit ApprovalForAll(owner, operator, approved);
+    }
+
+    /**
+     * @dev Hook that is called before any token transfer. This includes minting
+     * and burning, as well as batched variants.
+     *
+     * The same hook is called on both single and batched variants. For single
+     * transfers, the length of the `ids` and `amounts` arrays will be 1.
+     *
+     * Calling conditions (for each `id` and `amount` pair):
+     *
+     * - When `from` and `to` are both non-zero, `amount` of ``from``'s tokens
+     * of token type `id` will be  transferred to `to`.
+     * - When `from` is zero, `amount` tokens of token type `id` will be minted
+     * for `to`.
+     * - when `to` is zero, `amount` of ``from``'s tokens of token type `id`
+     * will be burned.
+     * - `from` and `to` are never both zero.
+     * - `ids` and `amounts` have the same, non-zero length.
+     *
+     * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
     function _beforeTokenTransfer(
         address operator,
@@ -336,7 +426,24 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
     ) internal virtual {}
 
     /**
-     * @dev Hook that is called after any token transfer
+     * @dev Hook that is called after any token transfer. This includes minting
+     * and burning, as well as batched variants.
+     *
+     * The same hook is called on both single and batched variants. For single
+     * transfers, the length of the `ids` and `amounts` arrays will be 1.
+     *
+     * Calling conditions (for each `id` and `amount` pair):
+     *
+     * - When `from` and `to` are both non-zero, `amount` of ``from``'s tokens
+     * of token type `id` will be  transferred to `to`.
+     * - When `from` is zero, `amount` tokens of token type `id` will be minted
+     * for `to`.
+     * - when `to` is zero, `amount` of ``from``'s tokens of token type `id`
+     * will be burned.
+     * - `from` and `to` are never both zero.
+     * - `ids` and `amounts` have the same, non-zero length.
+     *
+     * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
     function _afterTokenTransfer(
         address operator,
@@ -347,17 +454,6 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
         bytes memory data
     ) internal virtual {}
 
-    /**
-     * @dev Sets the URI for all token types
-     * @param newuri The new URI string
-     */
-    function _setURI(string memory newuri) internal virtual {
-        _uri = newuri;
-    }
-
-    /**
-     * @dev Internal function to check if a contract implements IERC1155Receiver
-     */
     function _doSafeTransferAcceptanceCheck(
         address operator,
         address from,
@@ -374,14 +470,11 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("ERC1155: transfer to non ERC1155Receiver implementer");
+                revert("ERC1155: transfer to non-ERC1155Receiver implementer");
             }
         }
     }
 
-    /**
-     * @dev Internal function to check if a contract implements IERC1155Receiver for batch transfers
-     */
     function _doSafeBatchTransferAcceptanceCheck(
         address operator,
         address from,
@@ -400,39 +493,14 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("ERC1155: transfer to non ERC1155Receiver implementer");
+                revert("ERC1155: transfer to non-ERC1155Receiver implementer");
             }
         }
     }
 
-    /**
-     * @dev Helper function to create a singleton array
-     */
     function _asSingletonArray(uint256 element) private pure returns (uint256[] memory) {
         uint256[] memory array = new uint256[](1);
         array[0] = element;
         return array;
-    }
-
-    /**
-     * @dev Converts a uint256 to its ASCII string decimal representation
-     */
-    function _toString(uint256 value) private pure returns (string memory) {
-        if (value == 0) {
-            return "0";
-        }
-        uint256 temp = value;
-        uint256 digits;
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
-        }
-        bytes memory buffer = new bytes(digits);
-        while (value != 0) {
-            digits -= 1;
-            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
-            value /= 10;
-        }
-        return string(buffer);
     }
 }

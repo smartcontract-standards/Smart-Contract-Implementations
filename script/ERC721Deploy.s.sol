@@ -6,25 +6,26 @@ import {ERC721} from "../src/standards/ERC721/ERC721.sol";
 
 /**
  * @title ERC721Deploy
- * @dev Deployment script for ERC721 token
+ * @dev Deployment script for ERC721 NFT contract
  */
 contract ERC721Deploy is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
         // Token parameters - modify these as needed
         string memory name = "My NFT";
+ main
         string memory symbol = "MNFT";
-        string memory baseURI = "https://api.example.com/token/";
 
         vm.startBroadcast(deployerPrivateKey);
 
-        ERC721 token = new ERC721(name, symbol, baseURI);
+        ERC721 nft = new ERC721(name, symbol);
 
         vm.stopBroadcast();
 
-        console.log("Token deployed at:", address(token));
-        console.log("Token name:", name);
-        console.log("Token symbol:", symbol);
-        console.log("Base URI:", baseURI);
+        console.log("NFT contract deployed at:", address(nft));
+        console.log("Collection name:", name);
+        console.log("Collection symbol:", symbol);
     }
 }
+
