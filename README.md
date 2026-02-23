@@ -27,6 +27,7 @@ ERC/
 │   │   ├── ERC20/          # Fungible tokens
 │   │   ├── ERC721/         # Non-fungible tokens
 │   │   ├── ERC1155/        # Multi-token standard
+│   │   ├── ERC2612/        # ERC20 Permit (gasless approvals)
 │   │   ├── ERC8004/        # Trustless Agents
 │   │   └── ...
 │   └── shared/             # Shared components and utilities
@@ -65,7 +66,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 - **ERC-2309**: Consecutive Transfer Standard 📋 *planned*
 
 ### 🟡 Permission & Authorization Standards
-- **ERC-2612**: Permit Extension for ERC-20 📋 *planned*
+- **ERC-2612**: Permit Extension for ERC-20 ✅ *complete* - [View Implementation](src/standards/ERC2612/) - [Read Docs](src/standards/ERC2612/README.md)
 - **ERC-777**: Advanced Token Standard 📋 *planned*
 - **ERC-725**: General Key-Value Store / Identity 📋 *planned*
 - **ERC-1056**: Ethereum Light Client Identity 📋 *planned*
