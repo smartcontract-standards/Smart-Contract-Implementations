@@ -11,6 +11,8 @@ import {ERC721} from "./ERC721.sol";
 contract ERC721Testable is ERC721 {
     constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) {}
 
+    constructor(string memory name_, string memory symbol_, string memory baseURI_) ERC721(name_, symbol_, baseURI_) {}
+
     /**
      * @dev Exposes _mint for testing purposes
      */
@@ -40,5 +42,9 @@ contract ERC721Testable is ERC721 {
     }
 
     // exists() is already public in ERC721, no need to override
+
+}
+
+
 }
 

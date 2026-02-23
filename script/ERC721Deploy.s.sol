@@ -12,8 +12,9 @@ contract ERC721Deploy is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
-        // NFT parameters - modify these as needed
-        string memory name = "My NFT Collection";
+        // Token parameters - modify these as needed
+        string memory name = "My NFT";
+ main
         string memory symbol = "MNFT";
 
         vm.startBroadcast(deployerPrivateKey);
