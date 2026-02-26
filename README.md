@@ -28,6 +28,7 @@ ERC/
 │   │   ├── ERC721/         # Non-fungible tokens
 │   │   ├── ERC1155/        # Multi-token standard
 │   │   ├── ERC2612/        # ERC20 Permit (gasless approvals)
+│   │   ├── ERC2981/        # NFT Royalty (ERC721/ERC1155)
 │   │   ├── ERC8004/        # Trustless Agents
 │   │   └── ...
 │   └── shared/             # Shared components and utilities
@@ -73,7 +74,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 - **ERC-7568**: Token State Fingerprinting 📋 *planned*
 
 ### 🟠 Royalty & Payment Standards
-- **ERC-2981**: NFT Royalty Standard 📋 *planned*
+- **ERC-2981**: NFT Royalty Standard ✅ *complete* - [View Implementation](src/standards/ERC2981/) - [Read Docs](src/standards/ERC2981/README.md)
 - **ERC-5501**: EIP-165 Interface Support for ERC-2981 📋 *planned*
 - **ERC-5727**: Expandable Vesting NFT 📋 *planned*
 - **ERC-5215**: EIP-721 Enumerable ⏳ *in progress*
