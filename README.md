@@ -32,6 +32,9 @@ ERC/
 │   │   ├── ERC4907/        # Rental NFT (user/expires)
 │   │   ├── ERC5192/        # Soulbound NFTs
 │   │   ├── ERC8004/        # Trustless Agents
+│   │   ├── ERC165/         # Standard Interface Detection
+│   │   ├── ERC1271/        # Standard Signature Validation
+│   │   ├── ERC3156/        # Flash Loans
 │   │   └── ...
 │   └── shared/             # Shared components and utilities
 │       ├── interfaces/     # Interface definitions
@@ -58,7 +61,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 - **ERC-7521**: Intents Token Standard 📋 *planned*
 
 ### 🔵 Interface & Detection Standards
-- **ERC-165**: Standard Interface Detection 📋 *planned*
+- **ERC-165**: Standard Interface Detection ✅ *complete* - [View Implementation](src/standards/ERC165/) - [Read Docs](src/standards/ERC165/README.md)
 - **ERC-1820**: Pseudo-introspection Registry 📋 *planned*
 - **ERC-6821**: Singleton Factory ⏳ *in progress*
 
@@ -83,7 +86,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 - **ERC-7007**: ZK EdDSA Verifier Registry ⏳ *in progress*
 
 ### 🟣 Transfer & Accounting Standards
-- **ERC-3156**: Flash Loans 📋 *planned*
+- **ERC-3156**: Flash Loans ✅ *complete* - [View Implementation](src/standards/ERC3156/) - [Read Docs](src/standards/ERC3156/README.md)
 - **ERC-1363**: Payable Token 📋 *planned*
 - **ERC-3525**: Semi-Fungible Token Standard 📋 *planned*
 - **ERC-3589**: Proxy ERC20 ⏳ *in progress*
@@ -119,7 +122,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 - **ERC-7904**: EIP-165 Interface Detection for EIP-20 Tokens ⏳ *in progress*
 
 ### 🔹 Wrapper & Compatibility Standards
-- **ERC-1271**: Standard Signature Validation Method 📋 *planned*
+- **ERC-1271**: Standard Signature Validation Method ✅ *complete* - [View Implementation](src/standards/ERC1271/) - [Read Docs](src/standards/ERC1271/README.md)
 - **ERC-2696**: Safer ERC20 📋 *planned*
 - **ERC-4804**: ENS Resolver Omnichain (LayerZero) 📋 *planned*
 - **ERC-5169**: Cross-Chain Execution ⏳ *in progress*
