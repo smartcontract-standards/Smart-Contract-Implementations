@@ -35,6 +35,7 @@ ERC/
 │   │   ├── ERC165/         # Standard Interface Detection
 │   │   ├── ERC1271/        # Standard Signature Validation
 │   │   ├── ERC3156/        # Flash Loans
+│   │   ├── ERC1363/        # Payable Token
 │   │   └── ...
 │   └── shared/             # Shared components and utilities
 │       ├── interfaces/     # Interface definitions
@@ -87,7 +88,7 @@ This repository aims to implement a comprehensive collection of ERC standards ac
 
 ### 🟣 Transfer & Accounting Standards
 - **ERC-3156**: Flash Loans ✅ *complete* - [View Implementation](src/standards/ERC3156/) - [Read Docs](src/standards/ERC3156/README.md)
-- **ERC-1363**: Payable Token 📋 *planned*
+- **ERC-1363**: Payable Token ✅ *complete* - [View Implementation](src/standards/ERC1363/) - [Read Docs](src/standards/ERC1363/README.md)
 - **ERC-3525**: Semi-Fungible Token Standard 📋 *planned*
 - **ERC-3589**: Proxy ERC20 ⏳ *in progress*
 
